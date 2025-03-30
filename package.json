@@ -1,0 +1,85 @@
+{
+  "name": "zustand-context",
+  "description": "Context-aware state management built on top of Zustand",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "docs:dev": "cd docs && pnpm start",
+    "docs:build": "cd docs && pnpm build",
+    "docs:serve": "cd docs && pnpm serve",
+    "storybook": "cd examples && pnpm storybook",
+    "build-storybook": "cd examples && pnpm build-storybook",
+    "prettier": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "lint": "eslint \"src/**/*.{ts,tsx}\""
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mag1yar/zustand-context.git"
+  },
+  "keywords": [
+    "zustand",
+    "react",
+    "state",
+    "context",
+    "hooks"
+  ],
+  "author": "Amangaliyev Magiyar",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mag1yar/zustand-context/issues"
+  },
+  "homepage": "https://github.com/mag1yar/zustand-context#readme",
+  "peerDependencies": {
+    "@types/react": ">=18.0.0",
+    "react": ">=18.0.0",
+    "zustand": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/node": "^22.13.14",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^4.5.3",
+    "zustand": "^5.0.3"
+  }
+}
