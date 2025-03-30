@@ -19,9 +19,9 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
-env:
+# env:
   # Hosted GitHub runners have 7 GB of memory available, let's use 6 GB
-  NODE_OPTIONS: --max-old-space-size=6144
+  # NODE_OPTIONS: --max-old-space-size=6144
 
 jobs:
   deploy:
@@ -43,15 +43,15 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install
+        run: cd docs && pnpm install
       - name: Build
-        run: pnpm build
+        run: cd docs && pnpm build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build
+          path: docs/build
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
