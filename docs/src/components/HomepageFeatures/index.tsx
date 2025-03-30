@@ -1,7 +1,10 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
 import styles from './styles.module.css';
+import UndrawDocusaurusMountain from '@site/static/img/undraw_docusaurus_mountain.svg';
+import UndrawDocusaurusTree from '@site/static/img/undraw_docusaurus_tree.svg';
+import UndrawDocusaurusReact from '@site/static/img/undraw_docusaurus_react.svg';
 
 type FeatureItem = {
   title: string;
@@ -11,38 +14,38 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'Context-Aware State',
+    Svg: UndrawDocusaurusMountain,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Enjoy the simplicity of Zustand with the power of React Context. Isolate state to specific
+        component trees while maintaining Zustand's efficient update model.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Multiple Nested Providers',
+    Svg: UndrawDocusaurusTree,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Create isolated state instances with <code>instanceId</code> and access them with{' '}
+        <code>from()</code>. Perfect for dashboards, complex forms, and multi-tenant UIs.
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'TypeScript First',
+    Svg: UndrawDocusaurusReact,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Built with full TypeScript support, including DeepPartial types for initialState,
+        strongly-typed selectors, and comprehensive type definitions.
       </>
     ),
   },
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
+function Feature({ title, Svg, description }: FeatureItem) {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
