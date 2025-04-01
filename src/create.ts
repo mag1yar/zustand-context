@@ -94,7 +94,7 @@ export const create: Create = (initializer, options) => {
 
     if (!contextValue) {
       if (defaultStore) {
-        debug && console.info(`${logPrefix}Using default store`);
+        if (debug) console.info(`${logPrefix}Using default store`);
 
         return selector ? useStore(defaultStore, selector) : useStore(defaultStore);
       }
@@ -129,7 +129,7 @@ export const create: Create = (initializer, options) => {
 
       if (!contextValue) {
         if (defaultStore) {
-          debug && console.info(`${logPrefix}Using default store`);
+          if (debug) console.info(`${logPrefix}Using default store`);
           // NOTE: В zustand v4+ useStore принимает только 2 аргумента
           return selector ? useStore(defaultStore, selector) : useStore(defaultStore);
         }
@@ -157,7 +157,7 @@ export const create: Create = (initializer, options) => {
         const warning = `Instance ${String(
           targetInstanceId,
         )} not found, using default instance instead`;
-        debug && console.warn(`${logPrefix}${warning}`);
+        if (debug) console.warn(`${logPrefix}${warning}`);
       }
 
       return selector ? useStore(store, selector) : useStore(store);
@@ -188,11 +188,11 @@ export const create: Create = (initializer, options) => {
       // Create a new store instance for this provider
       const currentStore = createStore(initializer as any);
 
-      debug && console.info(`${logPrefix}Created new store instance for ${String(instanceId)}`);
+      if (debug) console.info(`${logPrefix}Created new store instance for ${String(instanceId)}`);
 
       // Apply initialState if provided
       if (initialState) {
-        debug && console.info(`${logPrefix}Applying initialState to ${String(instanceId)}`);
+        if (debug) console.info(`${logPrefix}Applying initialState to ${String(instanceId)}`);
 
         if (mergeStrategy === 'replace') {
           // Replace entire state
@@ -213,7 +213,7 @@ export const create: Create = (initializer, options) => {
 
       // If we have a parent context, copy all its stores
       if (parentContext) {
-        debug && console.info(`${logPrefix}Inheriting parent context stores`);
+        if (debug) console.info(`${logPrefix}Inheriting parent context stores`);
 
         // Copy parent stores to maintain the hierarchy
         parentContext.stores.forEach((store, id) => {
