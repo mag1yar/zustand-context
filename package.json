@@ -1,5 +1,5 @@
 {
-  "name": "zustand-context",
+  "name": "@mag1yar/zustand-context",
   "description": "Context-aware state management built on top of Zustand",
   "version": "0.1.0",
   "type": "module",
