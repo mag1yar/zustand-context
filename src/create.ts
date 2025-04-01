@@ -130,7 +130,6 @@ export const create: Create = (initializer, options) => {
       if (!contextValue) {
         if (defaultStore) {
           if (debug) console.info(`${logPrefix}Using default store`);
-          // NOTE: В zustand v4+ useStore принимает только 2 аргумента
           return selector ? useStore(defaultStore, selector) : useStore(defaultStore);
         }
 
