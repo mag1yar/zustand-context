@@ -19,10 +19,6 @@ concurrency:
   group: 'pages'
   cancel-in-progress: true
 
-# env:
-  # Hosted GitHub runners have 7 GB of memory available, let's use 6 GB
-  # NODE_OPTIONS: --max-old-space-size=6144
-
 jobs:
   deploy:
     environment:
@@ -46,6 +42,8 @@ jobs:
         run: cd docs && pnpm install
       - name: Build
         run: cd docs && pnpm build
+      - name: Add .nojekyll file
+        run: touch docs/build/.nojekyll
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact
