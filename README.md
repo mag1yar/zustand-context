@@ -159,7 +159,7 @@ import { useBearStore } from './store';
 
 function App() {
   return (
-    <useBearStore.Provider instanceId="park" initialState={{ bears: 0 }}>
+    <useBearStore.Provider instanceId="park" initialState={{ bears: 10 }}>
       <div>
         <h1>National Park</h1>
         <ParkStats /> {/* Can only access "park" instance */}
@@ -227,7 +227,7 @@ function ForestStats() {
 }
 ```
 
-Note: The `from` method can only access store instances within the current React context hierarchy. In strict mode, it will throw an error if the provider is not found.
+> ℹ️ The `from` method can only access store instances within the current React context hierarchy. In strict mode, it will throw an error if the provider is not found.
 
 ## Using without Provider
 
@@ -250,7 +250,10 @@ const useFishStore = create<FishState>(
   {
     name: 'FishStore',
     strict: false, // Don't throw if Provider is missing
-    defaultState: { fishes: 3 }, // Used when no Provider is found
+    defaultState: {
+      fishes: 3,
+      addFish: () => console.warn('Provider not found, using default value'),
+    }, // Used when no Provider is found
   },
 );
 
@@ -353,6 +356,7 @@ const useForestStore = create<ForestState>(
   (set) => ({
     bears: 0,
     trees: 100,
+    secret: '***',
     ecosystem: { health: 75, rainfall: 50 },
     addBears: (count) => set((state) => ({ bears: state.bears + count })),
     plantTrees: (count) => set((state) => ({ trees: state.trees + count })),
@@ -368,7 +372,7 @@ const useForestStore = create<ForestState>(
       shallow: true, // Use shallow merge (default)
       whitelist: ['bears', 'trees'], // Only merge these keys
       blacklist: ['secret'], // Don't merge these keys
-      customMerge: (oldState, newState) => ({ ...oldState, ...newState }),
+      customMerge: (oldState, newState) => ({ ...oldState, ...newState } as ForestState),
     },
   },
 );
@@ -391,13 +395,13 @@ interface BearState {
 const usePersistBearStore = create<BearState>(
   devtools(
     persist(
-      immer((set) => ({
+      (set) => ({
         bears: 0,
         addBear: () =>
-          set((state) => {
-            state.bears++;
-          }),
-      })),
+          set((state) => ({
+            bears: state.bears + 1,
+          })),
+      }),
       { name: 'bears-storage' },
     ),
     { name: 'bears' },
@@ -414,7 +418,6 @@ const usePersistBearStore = create<BearState>(
 
 ### Why @mag1yar/zustand-context over regular Context API?
 
-- Dramatically less boilerplate
 - Built-in state management with immutable updates
 - Easy access to specific store instances
 - Hierarchical state inheritance
