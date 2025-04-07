@@ -18,32 +18,34 @@ const sidebars: SidebarsConfig = {
 
   // But you can create a sidebar manually
   docsSidebar: [
+    'introduction',
+    'getting-started',
+    'motivation',
     {
       type: 'category',
-      label: 'Introduction',
-      items: ['getting-started', 'motivation'],
-    },
-    {
-      type: 'category',
-      label: 'Guides',
+      label: 'Core Concepts',
       items: [
-        'guides/basic-usage',
-        'guides/merge-strategies',
-        'guides/multiple-contexts',
-        'guides/middleware',
-        'guides/error-handling',
+        'core-concepts/store-with-context',
+        'core-concepts/provider-consumer-pattern',
+        'core-concepts/store-instances',
       ],
     },
-    {
-      type: 'category',
-      label: 'Advanced',
-      items: ['advanced/typescript', 'advanced/performance'],
-    },
-    {
-      type: 'category',
-      label: 'API Reference',
-      items: ['api/create', 'api/provider', 'api/from', 'api/types'],
-    },
+    // {
+    //   type: 'category',
+    //   label: 'Guides',
+    //   items: [
+    //     'guides/basic-usage',
+    //     'guides/merge-strategies',
+    //     'guides/multiple-contexts',
+    //     'guides/middleware',
+    //     'guides/error-handling',
+    //   ],
+    // },
+    // {
+    //   type: 'category',
+    //   label: 'API Reference',
+    //   items: ['api/create', 'api/provider', 'api/from', 'api/types'],
+    // },
   ],
 };
 

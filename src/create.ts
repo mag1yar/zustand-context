@@ -256,12 +256,3 @@ export const create: Create = (initializer, options) => {
 
   return useContextStore as ContextStore<any>;
 };
-
-// Backward compatibility method for optional contexts
-create.optional = function optional(initializer, defaultValue) {
-  return create(initializer, {
-    name: 'optional', // Since name is required, provide a default
-    strict: false,
-    defaultState: defaultValue,
-  });
-};

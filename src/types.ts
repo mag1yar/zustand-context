@@ -79,21 +79,10 @@ export interface ContextStore<T> {
   };
 }
 
-// Internal type for create.optional
-export type OptionalContextStoreCreator = <T>(
-  initializer: StateCreator<T, any, any>,
-  defaultValue: T,
-) => ContextStore<T>;
-
-export type CreateWithOptions = <T>(
+export type Create = <T>(
   initializer: StateCreator<T, any, any>,
   options: ContextOptions<T>,
 ) => ContextStore<T>;
-
-// Type for the create function including create.optional
-export interface Create extends CreateWithOptions {
-  optional: OptionalContextStoreCreator;
-}
 
 export type CreateStoreImpl = <T, Mos extends [StoreMutatorIdentifier, unknown][] = []>(
   initializer: StateCreator<T, [], Mos>,

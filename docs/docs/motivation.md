@@ -1,69 +1,105 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 ---
 
-# Motivation
+# 💡 Why zustand-context?
 
-## The Problem
+## The Problem: Global vs. Local State
 
-State management in React applications can be challenging, especially when you need to:
+When building React applications, you often face this challenging question:
 
-1. **Share state across components** that aren't directly related in the component tree
-2. **Initialize state dynamically** based on props or external data
-3. **Balance global vs. local state** needs
-4. **Maintain type safety** throughout your application
-5. **Support multiple instances** of the same component with isolated state
+> **"Should I use global state management or React Context for this component?"**
 
-The React Context API solves some of these problems but can lead to performance issues due to re-renders. Zustand provides a great solution for global state management but doesn't have built-in support for context-aware, locally scoped state.
+This is especially relevant when you need multiple instances of the same component type, each with their own isolated state.
 
-## Why zustand-context?
+## Current Solutions and Their Limitations
 
-zustand-context bridges this gap by combining the best of both worlds:
+### 🌍 Global State (Zustand)
 
-### 🔄 Zustand's Simplicity and Performance
+Zustand offers an elegant and powerful global state management solution:
 
-- **Minimal API** - Simple hooks-based API just like Zustand
-- **Selective re-renders** - Only components that use the selected state are re-rendered
-- **Middleware support** - Compatible with all Zustand middleware (persist, immer, devtools, etc.)
+- ✅ Simple, hook-based API
+- ✅ Efficient updates with selectors
+- ✅ Rich middleware ecosystem
+- ❌ **Only one global instance per store**
+- ❌ No component-scoped isolation
 
-### 🌟 React Context's Flexibility
+### 🔄 React Context
 
-- **Component-scoped state** - Create isolated state for specific component trees
-- **Dynamic initialization** - Initialize state based on props or external data
-- **Provider nesting** - Support for nested providers with proper state isolation
-- **Type safety** - Full TypeScript support throughout
+React's Context API provides component-scoped state:
 
-## When to Use zustand-context
+- ✅ Component-scoped state
+- ✅ Multiple instances possible
+- ✅ Hierarchical state passing
+- ❌ No built-in state management features
+- ❌ Often causes unnecessary re-renders
+- ❌ Verbose boilerplate code
 
-zustand-context is particularly useful when:
+## The Solution: zustand-context
 
-- You need **multiple instances** of the same component with isolated state
-- You're building a **component library** with encapsulated state management
-- You want to **initialize state dynamically** based on props or server data
-- You need to **scope state to a specific part** of your application
-- You're looking for a **Zustand-like API** with context support
+**@mag1yar/zustand-context** bridges this gap by combining the best of both worlds:
 
-## Benefits Over Alternatives
+```
+Zustand's elegant API + React Context's component boundaries = 💪 zustand-context
+```
 
-Compared to other solutions:
+## Key Benefits
 
-| Feature                | React Context                     | Zustand                      | zustand-context                            |
-| ---------------------- | --------------------------------- | ---------------------------- | ------------------------------------------ |
-| Performance            | ❌ Re-renders all consumers       | ✅ Selective re-renders      | ✅ Selective re-renders                    |
-| API Simplicity         | ❌ Requires providers & consumers | ✅ Simple hooks API          | ✅ Simple hooks API                        |
-| Multiple Instances     | ✅ Supported                      | ❌ Global by default         | ✅ Supported                               |
-| Middleware             | ❌ Not supported                  | ✅ Rich middleware ecosystem | ✅ Compatible with Zustand middleware      |
-| TypeScript Support     | ✅ Basic support                  | ✅ Good support              | ✅ Enhanced support with DeepPartial types |
-| Dynamic Initialization | ✅ Supported                      | ❌ Limited                   | ✅ Rich initialization options             |
+### 1. 🧩 Component-Scoped State with Zustand's API
 
-## Real-World Use Cases
+Define your state once and create as many independent instances as needed:
 
-zustand-context excels in scenarios like:
+- Isolated state for each component tree
+- Familiar Zustand patterns and selectors
+- No global state conflicts
 
-- **Multi-tenant applications** where each tenant needs isolated state
-- **Form libraries** that need isolated state for each form instance
-- **Data grids** with independent sorting, filtering, and pagination state
-- **Wizard/multi-step components** with complex state transitions
-- **Dashboard widgets** that need isolated yet shareable state
+### 2. 🔗 Access to Specific Instances
 
-In the next sections, we'll dive into how to use zustand-context effectively in your applications.
+The `from()` method provides a clean way to access specific store instances:
+
+- Reference any named instance in the provider hierarchy
+- Create relationships between different context instances
+- Maintain isolation with explicit access patterns
+
+### 3. 🌲 Hierarchical State Management
+
+Nested providers can inherit and override parent state:
+
+- Progressive refinement of state down the component tree
+- Parent-child state relationships
+- Hierarchical defaults with specific overrides
+
+### 4. 🚀 Optional Provider Mode
+
+For maximum flexibility, stores can work with or without a Provider:
+
+- Use `strict: false` and `defaultState` for provider-optional components
+- Graceful fallbacks when a provider doesn't exist
+- Ideal for component libraries and optional features
+
+## Comparison at a Glance
+
+| Feature                      | React Context | Zustand | zustand-context |
+| ---------------------------- | ------------- | ------- | --------------- |
+| Component-scoped state       | ✅            | ❌      | ✅              |
+| Efficient re-renders         | ❌            | ✅      | ✅              |
+| Multiple instances           | ✅            | ❌      | ✅              |
+| Selector-based subscriptions | ❌            | ✅      | ✅              |
+| Access to specific instances | ❌            | N/A     | ✅              |
+| Middleware support           | ❌            | ✅      | ✅              |
+| Provider-optional mode       | ❌            | N/A     | ✅              |
+
+## Perfect Use Cases
+
+- **UI Component Libraries** - Create compound component systems with shared state
+- **Multiple Instances** - Data grids, forms, modals, or other components that appear multiple times
+- **Hierarchical Applications** - Apps with nested state requirements
+- **Optional Features** - Components that can work with or without context providers
+
+## Next Steps
+
+Ready to see zustand-context in action? Continue to:
+
+- [Store with Context](../docs/core-concepts/store-with-context) - Understand the core concept
+<!-- - [Basic Usage Patterns](../docs/guides/basic-usage) - Practical examples -->
+<!-- - [Provider Configuration](../docs/guides/provider-configuration) - Learn about provider options -->

@@ -1,84 +1,85 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
-# Getting Started
+# 🚀 Getting Started
 
-## Installation
+Let's get you up and running with `@mag1yar/zustand-context` in just a few minutes!
 
-Install zustand-context using your preferred package manager:
+## 📦 Installation
+
+`zustand-context` requires React as its only hard dependency:
 
 ```bash
 # Using npm
-npm install zustand-context
+npm install @mag1yar/zustand-context
 
 # Using yarn
-yarn add zustand-context
+yarn add @mag1yar/zustand-context
 
 # Using pnpm
-pnpm add zustand-context
+pnpm add @mag1yar/zustand-context
 ```
 
-## Prerequisites
-
-This library requires:
-
-- React 18.0.0 or higher
-- Zustand 5.0.0 or higher
-
-Make sure these dependencies are installed in your project:
+While zustand is marked as an optional peer dependency, it's still recommended for the best experience:
 
 ```bash
-npm install react zustand
+# Using npm
+npm install zustand
+
+# Using yarn
+yarn add zustand
+
+# Using pnpm
+pnpm add zustand
 ```
 
-## Basic Usage
+## 🧩 Prerequisites
 
-Here's a simple counter example to get you started:
+- React 18.0.0+
+- Zustand 5.0.0+ (recommended but optional)
+
+## 🔰 Quick Start Example
+
+Here's a minimal counter example to demonstrate the basics:
 
 ```tsx
-import { create } from 'zustand-context';
+import { create } from '@mag1yar/zustand-context';
 
-// Define your state and actions
+// 1️⃣ Define your state and actions
 interface CounterState {
   count: number;
   increment: () => void;
   decrement: () => void;
-  reset: () => void;
 }
 
-// Create a context-aware store
+// 2️⃣ Create a context-aware store
 const useCounterStore = create<CounterState>(
   (set) => ({
     count: 0,
     increment: () => set((state) => ({ count: state.count + 1 })),
     decrement: () => set((state) => ({ count: state.count - 1 })),
-    reset: () => set({ count: 0 }),
   }),
   {
-    name: 'Counter', // Required parameter
-    debug: false, // Optional - enables debug logging
+    name: 'Counter', // 👉 Required: name for your store context
   },
 );
 
-// Use in a component
+// 3️⃣ Use in your components
 function Counter() {
+  // 💡 Works just like you'd expect
   const count = useCounterStore((state) => state.count);
   const increment = useCounterStore((state) => state.increment);
-  const decrement = useCounterStore((state) => state.decrement);
-  const reset = useCounterStore((state) => state.reset);
 
   return (
     <div>
       <h2>Count: {count}</h2>
-      <button onClick={increment}>+</button>
-      <button onClick={decrement}>-</button>
-      <button onClick={reset}>Reset</button>
+      <button onClick={increment}>Increment</button>
     </div>
   );
 }
 
-// Wrap with Provider
+// 4️⃣ Wrap with Provider
 function App() {
   return (
     <useCounterStore.Provider>
@@ -88,18 +89,13 @@ function App() {
 }
 ```
 
-## Key Concepts
+That's it! You've created your first context-aware store. 🎉
 
-- **Context-Aware Store**: A Zustand store that is integrated with React Context
-- **Provider**: A component that provides the store to its children
-- **Initial State**: Optional state that can be passed to the Provider
-- **Multiple Contexts**: Create multiple isolated contexts with different instance IDs
+## 🔍 What's Next?
 
-## Next Steps
+Now that you have a basic understanding, explore these topics:
 
-Now that you have a basic understanding of zustand-context, you can explore the following topics:
-
-- [Motivation and Benefits](./motivation.md)
-- [API Reference](./api/create.md)
-- [Merge Strategies](./guides/merge-strategies.md)
-- [Multiple Contexts](./guides/multiple-contexts.md)
+- [💡 Why use zustand-context?](./motivation)
+- [🧠 Store with Context](../docs/core-concepts/store-with-context)
+<!-- - [Basic Usage](../guides/basic-usage) - More detailed examples -->
+<!-- - [API Reference](../api/create) - Complete API documentation -->
