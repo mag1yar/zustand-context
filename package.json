@@ -49,7 +49,7 @@
   "bugs": {
     "url": "https://github.com/mag1yar/zustand-context/issues"
   },
-  "homepage": "https://github.com/mag1yar/zustand-context#readme",
+  "homepage": "https://mag1yar.github.io/zustand-context",
   "peerDependencies": {
     "@types/react": ">=18.0.0",
     "react": ">=18.0.0",
