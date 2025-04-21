@@ -38,37 +38,6 @@ export const deepMerge = <T extends Record<string, any>>(target: T, source: any)
 };
 
 /**
- * Creates a filtered state object based on whitelist/blacklist
- */
-export const filterStateByLists = <T extends Record<string | number | symbol, any>>(
-  state: Partial<T>,
-  whitelist?: Array<keyof T>,
-  blacklist?: Array<keyof T>,
-): Partial<T> => {
-  if (!whitelist && !blacklist) return state;
-
-  const filteredState = { ...state } as Partial<T>;
-
-  if (whitelist && whitelist.length > 0) {
-    Object.keys(filteredState).forEach((key) => {
-      if (!whitelist.includes(key as keyof T)) {
-        delete (filteredState as any)[key];
-      }
-    });
-  }
-
-  if (blacklist && blacklist.length > 0) {
-    blacklist.forEach((key) => {
-      if (key in filteredState) {
-        delete filteredState[key];
-      }
-    });
-  }
-
-  return filteredState;
-};
-
-/**
  * Creates a formatted log prefix for consistent logs
  */
 export const createLogPrefix = (name: string, debug: boolean = false): string => {

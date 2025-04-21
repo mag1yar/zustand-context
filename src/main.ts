@@ -1,6 +1,4 @@
 import { create } from './create';
-import type { ContextOptions, ContextStore, ProviderProps, DeepPartial } from './types';
+import type { ContextOptions, ProviderProps, StoreOptions } from './types';
 
-export { create, ContextOptions, ContextStore, ProviderProps, DeepPartial };
-
-export default create;
+export { create, ContextOptions, ProviderProps, StoreOptions };
