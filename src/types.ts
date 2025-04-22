@@ -8,11 +8,10 @@ export type DeepPartial<T> = T extends object
     }
   : T;
 
-export type ContextOptions<T> = {
+export type ContextOptions = {
   name: string;
   defaultInstanceId?: string | symbol;
   strict?: boolean;
-  defaultState?: T;
   onError?: (error: Error) => void;
   debug?: boolean;
 };
@@ -45,10 +44,10 @@ export type UseContextBoundStore<T, S extends ReadonlyStoreApi<unknown>> = {
 export type Create = {
   <T, Mos extends [StoreMutatorIdentifier, unknown][] = []>(
     initializer: StateCreator<T, [], Mos>,
-    options: ContextOptions<T>,
+    options: ContextOptions,
   ): UseContextBoundStore<T, Mutate<StoreApi<T>, Mos>>;
   <T>(): <Mos extends [StoreMutatorIdentifier, unknown][] = []>(
     initializer: StateCreator<T, [], Mos>,
-    options: ContextOptions<T>,
+    options: ContextOptions,
   ) => UseContextBoundStore<T, Mutate<StoreApi<T>, Mos>>;
 };

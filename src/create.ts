@@ -9,17 +9,16 @@ import type {
 } from './types';
 import { createLogPrefix, deepMerge, formatErrorMessage } from './utils';
 
-const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOptions<T>) => {
+const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOptions) => {
   const {
     name,
     debug = false,
     defaultInstanceId = Symbol('default'),
-    defaultState,
     onError,
     strict = true,
   } = options;
 
-  const defaultStore = !strict && defaultState ? createStore(() => defaultState) : null;
+  const initialState = createStore(initializer).getState();
 
   const StoreContext = createContext<StoreContextType<T> | null>(null);
 
@@ -43,39 +42,60 @@ const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOpt
   function useContextStore(): T;
   function useContextStore<U>(selector?: (state: T) => U, options?: StoreOptions) {
     const { from: instanceId } = options || {};
+
     const contextValue = useContext(StoreContext);
 
     if (!contextValue) {
-      if (defaultStore) {
-        if (debug) console.info(`${logPrefix}Using default store`);
+      if (strict) {
+        const error = new Error(
+          formatErrorMessage(
+            'Provider not found. Make sure you have wrapped your components with the Provider.',
+            name,
+          ),
+        );
 
-        return selector ? useStore(defaultStore, selector) : useStore(defaultStore);
+        handleError(error);
+
+        return {} as U;
+      } else {
+        if (debug) console.info(`${logPrefix}Provider not found, using default state`);
+        return selector ? selector(initialState) : initialState;
       }
-
-      const error = new Error(
-        formatErrorMessage(
-          'Provider not found. Make sure you have wrapped your components with the Provider.',
-          name,
-        ),
-      );
-
-      handleError(error);
-
-      return {} as U;
     }
-
-    let store = contextValue.defaultStore;
 
     if (instanceId) {
-      store = contextValue.stores.get(instanceId) || contextValue.defaultStore;
+      const requestedStore = contextValue.stores.get(instanceId);
 
-      if (!contextValue.stores.has(instanceId) && debug) {
-        const warning = `Instance ${String(instanceId)} not found, using default instance instead`;
-        console.warn(`${logPrefix}${warning}`);
+      if (!requestedStore) {
+        if (strict) {
+          const error = new Error(
+            formatErrorMessage(
+              `Store with instanceId "${String(
+                instanceId,
+              )}" not found. Make sure you have provided the store in the Provider.`,
+              name,
+            ),
+          );
+
+          handleError(error);
+
+          return {};
+        } else {
+          console.warn(
+            `${logPrefix}Store with instanceId "${String(
+              instanceId,
+            )}" not found, using default state`,
+          );
+          return selector ? selector(initialState) : initialState;
+        }
       }
+
+      return selector ? useStore(requestedStore, selector) : useStore(requestedStore);
     }
 
-    return selector ? useStore(store, selector) : useStore(store);
+    return selector
+      ? useStore(contextValue.defaultStore, selector)
+      : useStore(contextValue.defaultStore);
   }
 
   const Provider = ({
@@ -132,5 +152,5 @@ const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOpt
  */
 export const create = (<T>(
   initializer: StateCreator<T, [], []> | undefined,
-  options: ContextOptions<T>,
+  options: ContextOptions,
 ) => (initializer ? createImpl(initializer, options) : createImpl)) as Create;
