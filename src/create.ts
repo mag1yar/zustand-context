@@ -151,6 +151,6 @@ const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOpt
  * Creates a context-aware Zustand store with options
  */
 export const create = (<T>(
-  initializer: StateCreator<T, [], []> | undefined,
+  initializer: StateCreator<T, [], []>,
   options: ContextOptions,
 ) => (initializer ? createImpl(initializer, options) : createImpl)) as Create;

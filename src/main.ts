@@ -1,4 +1,5 @@
+import { useShallow } from 'zustand/shallow';
 import { create } from './create';
 import type { ContextOptions, ProviderProps, StoreOptions } from './types';
 
-export { create, ContextOptions, ProviderProps, StoreOptions };
+export { create, ContextOptions, ProviderProps, StoreOptions, useShallow };
