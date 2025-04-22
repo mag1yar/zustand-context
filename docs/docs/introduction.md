@@ -1,4 +1,5 @@
 ---
+slug: /
 sidebar_position: 1
 ---
 
@@ -21,9 +22,9 @@ This documentation will guide you through:
 
 - [🚀 Getting Started](./getting-started) - Installation and basic setup
 - [💡 Why use zustand-context?](./motivation) - Core problems it solves
-<!-- - **Core Concepts** - Understanding fundamental patterns -->
-<!-- - **Guides** - Detailed usage instructions with examples -->
-<!-- - **API Reference** - Complete documentation of all features -->
-<!-- - **Examples** - Real-world use cases and patterns -->
+  <!-- - **Core Concepts** - Understanding fundamental patterns -->
+  <!-- - **Guides** - Detailed usage instructions with examples -->
+  <!-- - **API Reference** - Complete documentation of all features -->
+  <!-- - **Examples** - Real-world use cases and patterns -->
 
 Ready to enhance your Zustand experience with context awareness? Let's get started!

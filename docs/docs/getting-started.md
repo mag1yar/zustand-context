@@ -97,5 +97,5 @@ Now that you have a basic understanding, explore these topics:
 
 - [💡 Why use zustand-context?](./motivation)
 - [🧠 Store with Context](../docs/core-concepts/store-with-context)
-<!-- - [Basic Usage](../guides/basic-usage) - More detailed examples -->
-<!-- - [API Reference](../api/create) - Complete API documentation -->
+  <!-- - [Basic Usage](../guides/basic-usage) - More detailed examples -->
+  <!-- - [API Reference](../api/create) - Complete API documentation -->
