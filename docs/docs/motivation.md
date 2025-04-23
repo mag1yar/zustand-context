@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# 💡 Why zustand-context?
+# Why zustand-context?
 
 ## The Problem: Global vs. Local State
 
@@ -55,7 +55,7 @@ Define your state once and create as many independent instances as needed:
 
 ### 2. 🔗 Access to Specific Instances
 
-The `from()` method provides a clean way to access specific store instances:
+The `from` option provides a clean way to access specific store instances:
 
 - Reference any named instance in the provider hierarchy
 - Create relationships between different context instances
@@ -73,7 +73,7 @@ Nested providers can inherit and override parent state:
 
 For maximum flexibility, stores can work with or without a Provider:
 
-- Use `strict: false` and `defaultState` for provider-optional components
+- Use `strict: false` for provider-optional components
 - Graceful fallbacks when a provider doesn't exist
 - Ideal for component libraries and optional features
 
@@ -87,19 +87,4 @@ For maximum flexibility, stores can work with or without a Provider:
 | Selector-based subscriptions | ❌            | ✅      | ✅              |
 | Access to specific instances | ❌            | N/A     | ✅              |
 | Middleware support           | ❌            | ✅      | ✅              |
-| Provider-optional mode       | ❌            | N/A     | ✅              |
-
-## Perfect Use Cases
-
-- **UI Component Libraries** - Create compound component systems with shared state
-- **Multiple Instances** - Data grids, forms, modals, or other components that appear multiple times
-- **Hierarchical Applications** - Apps with nested state requirements
-- **Optional Features** - Components that can work with or without context providers
-
-## Next Steps
-
-Ready to see zustand-context in action? Continue to:
-
-- [Store with Context](../docs/core-concepts/store-with-context) - Understand the core concept
-<!-- - [Basic Usage Patterns](../docs/guides/basic-usage) - Practical examples -->
-<!-- - [Provider Configuration](../docs/guides/provider-configuration) - Learn about provider options -->
+| Provider-optional mode       | ✅            | N/A     | ✅              |

@@ -1,258 +1,506 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
-# Provider
+# Provider Component
 
-The `Provider` component is automatically attached to the store hook created with `create()`. It provides the store to all child components and enables context-aware state management.
+The `.Provider` component is attached to every store created with `zustand-context`. It creates a boundary for your store instance and makes it available to all child components.
 
-## Usage
+## Basic Usage
 
-```tsx
-<useStore.Provider>
-  <YourComponents />
-</useStore.Provider>
-```
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-## Props
-
-The `Provider` component accepts the following props:
-
-```ts
-interface ProviderProps<T> {
-  // Unique identifier for this context instance
-  instanceId?: string | symbol;
-
-  // Initial state to merge with the default state
-  initialState?: DeepPartial<T>;
-
-  // Strategy for merging initialState with default state
-  mergeStrategy?: 'shallow' | 'deep' | 'replace';
-
-  // Child components
-  children: React.ReactNode;
-}
-```
-
-### instanceId
-
-Unique identifier for this context instance. Used to access this specific context with the `from` method.
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-<useStore.Provider instanceId="user1">
-  <UserProfile />
-</useStore.Provider>
-```
-
-If not provided, the `defaultInstanceId` from the options is used (which defaults to a unique symbol).
-
-### initialState
-
-Initial state to merge with the default state. Can be a partial state object, with only the properties you want to override.
-
-```tsx
-<useCounterStore.Provider initialState={{ count: 10 }}>
+<useCounterStore.Provider>
   <Counter />
 </useCounterStore.Provider>
 ```
 
-### mergeStrategy
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-Strategy for merging `initialState` with the default state:
-
-- **shallow** (default): Shallow merge only the top-level properties
-- **deep**: Deep recursive merge of all nested properties
-- **replace**: Completely replace the state with `initialState`
-
-```tsx
-<useSettingsStore.Provider initialState={{ theme: { mode: 'dark' } }} mergeStrategy="deep">
-  <Settings />
-</useSettingsStore.Provider>
+```jsx
+<useCounterStore.Provider>
+  <Counter />
+</useCounterStore.Provider>
 ```
 
-## Behavior
+  </TabItem>
+</Tabs>
 
-### State Initialization
+## API Reference
 
-When a `Provider` is mounted:
+### Props
 
-1. A new store instance is created using the initializer function
-2. If `initialState` is provided, it's merged with the default state using the specified `mergeStrategy`
-3. The store is made available to all child components
-
-### Provider Nesting
-
-You can nest providers to create isolated instances of the store:
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-<useTeamStore.Provider instanceId="team1" initialState={{ name: 'Team 1' }}>
-  <TeamDashboard />
+interface ProviderProps<T> {
+  /** Optional ID for this instance */
+  instanceId?: string | symbol;
 
-  <useTeamStore.Provider instanceId="team2" initialState={{ name: 'Team 2' }}>
-    <TeamDashboard />
-  </useTeamStore.Provider>
-</useTeamStore.Provider>
+  /** Optional initial state (partial) */
+  initialState?: DeepPartial<T>;
+
+  /** React children */
+  children: React.ReactNode;
+}
 ```
 
-Each nested provider:
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-1. Creates its own isolated store instance
-2. Inherits access to all parent provider stores
-3. Can override a parent store by using the same `instanceId`
+```jsx
+{
+  // Optional ID for this instance
+  instanceId?: string | Symbol,
 
-### Context Inheritance
+  // Optional initial state (partial)
+  initialState?: object,
 
-Child components can access all parent provider instances:
+  // React children
+  children: React.ReactNode
+}
+```
+
+  </TabItem>
+</Tabs>
+
+### instanceId (optional)
+
+A unique identifier for this instance of the store. Used to:
+
+- Reference this specific instance using the `from` option
+- Distinguish between multiple instances of the same store
+- Provide meaningful names in debugging and error messages
+
+If not provided, a default internal Symbol will be used.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-function NestedComponent() {
-  // Access "team1" store from parent provider
-  const team1Name = useTeamStore.from('team1')((state) => state.name);
+<useCounterStore.Provider instanceId="header">
+  <HeaderCounter />
+</useCounterStore.Provider>
 
-  // Access current provider's store (team2)
-  const team2Name = useTeamStore((state) => state.name);
+<useCounterStore.Provider instanceId="sidebar">
+  <SidebarCounter />
+</useCounterStore.Provider>
+```
 
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+<useCounterStore.Provider instanceId="header">
+  <HeaderCounter />
+</useCounterStore.Provider>
+
+<useCounterStore.Provider instanceId="sidebar">
+  <SidebarCounter />
+</useCounterStore.Provider>
+```
+
+  </TabItem>
+</Tabs>
+
+You can also use a Symbol for guaranteed uniqueness:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+const HEADER_ID = Symbol('header');
+
+<useCounterStore.Provider instanceId={HEADER_ID}>
+  <HeaderCounter />
+</useCounterStore.Provider>;
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+const HEADER_ID = Symbol('header');
+
+<useCounterStore.Provider instanceId={HEADER_ID}>
+  <HeaderCounter />
+</useCounterStore.Provider>;
+```
+
+  </TabItem>
+</Tabs>
+
+### initialState (optional)
+
+A partial state object that overrides the default state values for this instance. Only the properties you include will be overridden.
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+<useCounterStore.Provider initialState={{ count: 5 }}>
+  <Counter />
+</useCounterStore.Provider>
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+<useCounterStore.Provider initialState={{ count: 5 }}>
+  <Counter />
+</useCounterStore.Provider>
+```
+
+  </TabItem>
+</Tabs>
+
+For nested state, you only need to include the properties you want to override:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+<useUserStore.Provider
+  initialState={{
+    profile: {
+      // Only override firstName, other profile properties remain unchanged
+      firstName: 'Jane',
+    },
+  }}>
+  <UserProfile />
+</useUserStore.Provider>
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+<useUserStore.Provider
+  initialState={{
+    profile: {
+      // Only override firstName, other profile properties remain unchanged
+      firstName: 'Jane',
+    },
+  }}>
+  <UserProfile />
+</useUserStore.Provider>
+```
+
+  </TabItem>
+</Tabs>
+
+## Provider Behaviors
+
+### Instance Creation
+
+When a Provider is mounted, it:
+
+1. Creates a new store instance
+2. Initializes it with the store's default state (from the initializer function in `create`)
+3. Applies any `initialState` values if provided
+4. Makes the instance accessible to all child components
+
+### Provider Isolation
+
+Each Provider creates an isolated instance:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+<useCounterStore.Provider initialState={{ count: 5 }}>
+  {/* This counter starts at 5 */}
+  <Counter />
+</useCounterStore.Provider>
+
+<useCounterStore.Provider initialState={{ count: 10 }}>
+  {/* This counter starts at 10 and is completely independent */}
+  <Counter />
+</useCounterStore.Provider>
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+<useCounterStore.Provider initialState={{ count: 5 }}>
+  {/* This counter starts at 5 */}
+  <Counter />
+</useCounterStore.Provider>
+
+<useCounterStore.Provider initialState={{ count: 10 }}>
+  {/* This counter starts at 10 and is completely independent */}
+  <Counter />
+</useCounterStore.Provider>
+```
+
+  </TabItem>
+</Tabs>
+
+### Multiple Providers
+
+You can have multiple providers with different IDs to create separate instances:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+function App() {
   return (
     <div>
-      <p>Team 1: {team1Name}</p>
-      <p>Team 2: {team2Name}</p>
+      {/* First counter instance */}
+      <useCounterStore.Provider instanceId="counter1" initialState={{ count: 5 }}>
+        <div>
+          <h3>Counter 1</h3>
+          <Counter />
+        </div>
+      </useCounterStore.Provider>
+
+      {/* Second counter instance */}
+      <useCounterStore.Provider instanceId="counter2" initialState={{ count: 10 }}>
+        <div>
+          <h3>Counter 2</h3>
+          <Counter />
+        </div>
+      </useCounterStore.Provider>
     </div>
   );
 }
 ```
 
-This enables powerful composition patterns where nested components can interact with multiple context instances.
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-## Examples
-
-### Basic Usage
-
-```tsx
-const useCounterStore = create<CounterState>(
-  (set) => ({
-    count: 0,
-    increment: () => set((state) => ({ count: state.count + 1 })),
-  }),
-  { name: 'Counter' },
-);
-
+```jsx
 function App() {
   return (
-    <useCounterStore.Provider>
-      <Counter />
-    </useCounterStore.Provider>
+    <div>
+      {/* First counter instance */}
+      <useCounterStore.Provider instanceId="counter1" initialState={{ count: 5 }}>
+        <div>
+          <h3>Counter 1</h3>
+          <Counter />
+        </div>
+      </useCounterStore.Provider>
+
+      {/* Second counter instance */}
+      <useCounterStore.Provider instanceId="counter2" initialState={{ count: 10 }}>
+        <div>
+          <h3>Counter 2</h3>
+          <Counter />
+        </div>
+      </useCounterStore.Provider>
+    </div>
   );
 }
 ```
 
-### Initial State
+  </TabItem>
+</Tabs>
+
+## Common Use Patterns
+
+### Feature-Specific Providers
+
+Wrap different features with their own providers:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
 function App() {
   return (
-    <useCounterStore.Provider initialState={{ count: 10 }}>
-      <Counter />
-    </useCounterStore.Provider>
+    <div>
+      <useAuthStore.Provider>
+        <Header />
+        <Sidebar />
+      </useAuthStore.Provider>
+
+      <useCartStore.Provider>
+        <ShoppingCart />
+      </useCartStore.Provider>
+    </div>
   );
 }
 ```
 
-### Deep Merge Strategy
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-```tsx
-interface Settings {
-  theme: {
-    mode: 'light' | 'dark';
-    colors: {
-      primary: string;
-      secondary: string;
-    };
-  };
-  notifications: {
-    email: boolean;
-    push: boolean;
-  };
-}
-
-const useSettingsStore = create<Settings>(
-  () => ({
-    theme: {
-      mode: 'light',
-      colors: {
-        primary: '#007bff',
-        secondary: '#6c757d',
-      },
-    },
-    notifications: {
-      email: true,
-      push: true,
-    },
-  }),
-  { name: 'Settings' },
-);
-
+```jsx
 function App() {
   return (
-    <useSettingsStore.Provider
+    <div>
+      <useAuthStore.Provider>
+        <Header />
+        <Sidebar />
+      </useAuthStore.Provider>
+
+      <useCartStore.Provider>
+        <ShoppingCart />
+      </useCartStore.Provider>
+    </div>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+
+### Reusable Components with Local State
+
+Create reusable components with their own isolated state:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+function DataTable({ data, columns }) {
+  return (
+    <useTableStore.Provider
       initialState={{
-        theme: {
-          mode: 'dark',
-          // colors will be inherited from the default state
-        },
-      }}
-      mergeStrategy="deep">
-      <Settings />
-    </useSettingsStore.Provider>
+        rows: data,
+        columns,
+        sortBy: columns[0].id,
+        sortDirection: 'asc',
+      }}>
+      <TableHeader />
+      <TableBody />
+      <TableFooter />
+    </useTableStore.Provider>
+  );
+}
+
+// Usage
+function ReportsPage() {
+  return (
+    <div>
+      <DataTable data={usersData} columns={userColumns} />
+
+      <DataTable data={ordersData} columns={orderColumns} />
+    </div>
   );
 }
 ```
 
-### Multiple Isolated Instances
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+function DataTable({ data, columns }) {
+  return (
+    <useTableStore.Provider
+      initialState={{
+        rows: data,
+        columns,
+        sortBy: columns[0].id,
+        sortDirection: 'asc',
+      }}>
+      <TableHeader />
+      <TableBody />
+      <TableFooter />
+    </useTableStore.Provider>
+  );
+}
+
+// Usage
+function ReportsPage() {
+  return (
+    <div>
+      <DataTable data={usersData} columns={userColumns} />
+
+      <DataTable data={ordersData} columns={orderColumns} />
+    </div>
+  );
+}
+```
+
+  </TabItem>
+</Tabs>
+
+### Accessing Multiple Providers
+
+To access multiple providers, you must structure your components so they're within the Provider hierarchy:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-function TeamScoreboard() {
+function App() {
   return (
     <div>
-      <useTeamStore.Provider instanceId="team1" initialState={{ name: 'Tigers', score: 0 }}>
-        <TeamDisplay />
+      {/* Root provider with common parent */}
+      <useCounterStore.Provider instanceId="root">
+        {/* First counter provider */}
+        <useCounterStore.Provider instanceId="counter1" initialState={{ count: 5 }}>
+          <Counter label="Counter 1" />
 
-        <useTeamStore.Provider instanceId="team2" initialState={{ name: 'Eagles', score: 0 }}>
-          <TeamDisplay />
+          {/* Second counter provider nested inside first */}
+          <useCounterStore.Provider instanceId="counter2" initialState={{ count: 10 }}>
+            <Counter label="Counter 2" />
 
-          <ScoreOverview />
-        </useTeamStore.Provider>
-      </useTeamStore.Provider>
+            {/* This component can access both counters */}
+            <CountersTotal />
+          </useCounterStore.Provider>
+        </useCounterStore.Provider>
+      </useCounterStore.Provider>
     </div>
   );
 }
 
-function ScoreOverview() {
-  // Access both team instances
-  const team1 = useTeamStore.from('team1')();
-  const team2 = useTeamStore.from('team2')();
+function CountersTotal() {
+  // Access specific instances by ID
+  const counter1Value = useCounterStore((s) => s.count, { from: 'counter1' });
 
-  return (
-    <div>
-      <h2>Score Overview</h2>
-      <p>
-        {team1.name}: {team1.score}
-      </p>
-      <p>
-        {team2.name}: {team2.score}
-      </p>
-    </div>
-  );
+  const counter2Value = useCounterStore((s) => s.count, { from: 'counter2' });
+
+  return <p>Total: {counter1Value + counter2Value}</p>;
 }
 ```
 
-## Best Practices
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-1. **Keep providers close to consumers**: Place providers as close as possible to the components that need them to minimize unnecessary re-renders.
+```jsx
+function App() {
+  return (
+    <div>
+      {/* Root provider with common parent */}
+      <useCounterStore.Provider instanceId="root">
+        {/* First counter provider */}
+        <useCounterStore.Provider instanceId="counter1" initialState={{ count: 5 }}>
+          <Counter label="Counter 1" />
 
-2. **Use meaningful instanceIds**: Use descriptive strings as instanceIds instead of symbols when you need to access them later with `from()`.
+          {/* Second counter provider nested inside first */}
+          <useCounterStore.Provider instanceId="counter2" initialState={{ count: 10 }}>
+            <Counter label="Counter 2" />
 
-3. **Be consistent with mergeStrategy**: Choose a merge strategy that makes sense for your data structure and use it consistently.
+            {/* This component can access both counters */}
+            <CountersTotal />
+          </useCounterStore.Provider>
+        </useCounterStore.Provider>
+      </useCounterStore.Provider>
+    </div>
+  );
+}
 
-4. **Initialize complex state**: For complex nested objects, use the `deep` merge strategy to avoid having to specify the entire object structure.
+function CountersTotal() {
+  // Access specific instances by ID
+  const counter1Value = useCounterStore((s) => s.count, { from: 'counter1' });
 
-5. **Avoid provider hot paths**: Don't place providers inside components that render frequently, as creating new store instances can impact performance.
+  const counter2Value = useCounterStore((s) => s.count, { from: 'counter2' });
+
+  return <p>Total: {counter1Value + counter2Value}</p>;
+}
+```
+
+  </TabItem>
+</Tabs>

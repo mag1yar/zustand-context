@@ -36,7 +36,7 @@ const config: Config = {
           routeBasePath: '/',
 
           sidebarPath: './sidebars.ts',
-          editUrl: `https://github.com/${organizationName}/${projectName}/tree/main/docs/docs/`,
+          editUrl: `https://github.com/${organizationName}/${projectName}/tree/main/docs/`,
         },
         blog: false,
         theme: {

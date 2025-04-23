@@ -1,297 +1,259 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # create
 
-The `create` function is the main API of zustand-context. It creates a context-aware Zustand store that can be used in your React components.
+The `create` function is the entry point for creating context-aware stores. It builds on Zustand's `create` function while adding context capabilities.
 
-## Signature
+## Basic Usage
 
-```ts
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
+import { create } from '@mag1yar/zustand-context';
+
+interface CounterState {
+  count: number;
+  increment: () => void;
+}
+
+const useCounterStore = create<CounterState>(
+  (set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+  }),
+  {
+    name: 'Counter', // Required: name for your context
+  },
+);
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+import { create } from '@mag1yar/zustand-context';
+
+const useCounterStore = create(
+  (set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+  }),
+  {
+    name: 'Counter', // Required: name for your context
+  },
+);
+```
+
+  </TabItem>
+</Tabs>
+
+## API Reference
+
+### Signature
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
+
+```tsx
 function create<T>(
-  initializer: StateCreator<T, any, any>,
-  options: ContextOptions<T>,
-): ContextStore<T>;
+  initializer: StateCreator<T, [], []>,
+  options: ContextOptions,
+): UseContextBoundStore<T>;
 ```
 
-## Parameters
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-- **initializer**: A function that creates the initial state and defines actions, just like in regular Zustand.
-- **options**: Configuration options for the context:
-
-  ```ts
-  interface ContextOptions<T> {
-    // Display name for debugging and errors (REQUIRED!)
-    name: string;
-
-    // ID for default context instance
-    defaultInstanceId?: string | symbol;
-
-    // Throw errors when Provider is missing
-    strict?: boolean;
-
-    // Default state when no Provider is available (requires strict: false)
-    defaultState?: T;
-
-    // Equality function for selectors
-    equalityFn?: <S>(a: S, b: S) => boolean;
-
-    // Error handling
-    onError?: (error: Error) => void;
-
-    // Merge strategy options for initialState
-    mergeOptions?: {
-      shallow?: boolean;
-      whitelist?: (keyof T)[];
-      blacklist?: (keyof T)[];
-      customMerge?: (oldState: T, newState: DeepPartial<T>) => T;
-    };
-
-    // Enable debug mode
-    debug?: boolean;
-  }
-  ```
-
-## Returns
-
-The `create` function returns a `ContextStore` object with the following properties and methods:
-
-### Hook Function
-
-The returned value is a hook function that can be used in your components:
-
-```ts
-// Get the full state
-const state = useCounterStore();
-
-// Select specific parts of the state using selectors
-const count = useCounterStore((state) => state.count);
+```jsx
+function create(
+  initializer,
+  options
+)
 ```
 
-### Provider Component
+  </TabItem>
+</Tabs>
 
-A React component to provide the store to your components:
+### Parameters
+
+- **initializer**: A function that creates the store's state and actions
+
+  - Identical to Zustand's initializer function
+  - Receives `set`, `get`, and `store` parameters
+  - Should return the initial state object with actions
+
+- **options**: Configuration options for the context behavior
+
+#### Context Options
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-<useCounterStore.Provider>
-  <YourComponent />
-</useCounterStore.Provider>
-```
+interface ContextOptions {
+  /** Required unique name for the store context */
+  name: string;
 
-You can also provide an initial state:
+  /** Optional ID for the default instance (default: internal Symbol) */
+  defaultInstanceId?: string | symbol;
 
-```tsx
-<useCounterStore.Provider initialState={{ count: 10 }}>
-  <YourComponent />
-</useCounterStore.Provider>
-```
+  /** Whether to throw errors when Provider is missing (default: true) */
+  strict?: boolean;
 
-And specify a merge strategy:
+  /** Custom error handler */
+  onError?: (error: Error) => void;
 
-```tsx
-<useCounterStore.Provider initialState={{ count: 10 }} mergeStrategy="deep">
-  <YourComponent />
-</useCounterStore.Provider>
-```
-
-### from Method
-
-Access a specific context instance:
-
-```ts
-// Access the "team1" instance
-const team1Count = useCounterStore.from('team1')((state) => state.count);
-```
-
-### useProxySelector
-
-Safely check if a provider exists:
-
-```ts
-// Uses defaultState if no provider exists
-const safeState = useCounterStore.useProxySelector(defaultState);
-```
-
-### \_context
-
-The raw React Context object for advanced usage:
-
-```ts
-const StoreContext = useCounterStore._context;
-```
-
-## Options Detail
-
-### name (required)
-
-A unique name for your store. Used for debugging and error messages.
-
-```ts
-name: 'Counter';
-```
-
-### defaultInstanceId (optional)
-
-The ID for the default context instance. Defaults to a unique symbol.
-
-```ts
-defaultInstanceId: 'default';
-```
-
-### strict (optional)
-
-Whether to throw errors when Provider is missing. Defaults to `true`.
-
-```ts
-strict: true;
-```
-
-### defaultState (optional)
-
-Default state when no Provider is available. Only used when `strict` is `false`.
-
-```ts
-defaultState: {
-  count: 0;
+  /** Enable debug logging (default: false) */
+  debug?: boolean;
 }
 ```
 
-### equalityFn (optional)
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-Custom equality function for selectors. Defaults to `Object.is`.
+```jsx
+{
+  // Required unique name for the store context
+  name: string,
 
-```ts
-equalityFn: (a, b) => a === b;
-```
+  // Optional ID for the default instance (default: internal Symbol)
+  defaultInstanceId?: string | Symbol,
 
-### onError (optional)
+  // Whether to throw errors when Provider is missing (default: true)
+  strict?: boolean,
 
-Custom error handler. If not provided, errors are logged to console (when `debug` is `true`) and thrown (when `strict` is `true`).
+  // Custom error handler
+  onError?: (error) => void,
 
-```ts
-onError: (error) => console.error(error);
-```
-
-### mergeOptions (optional)
-
-Options for how initial state is merged with the default state.
-
-```ts
-mergeOptions: {
-  // Use shallow merge (default) or deep merge
-  shallow: true,
-
-  // Only merge these keys
-  whitelist: ['count', 'user'],
-
-  // Don't merge these keys
-  blacklist: ['sensitive'],
-
-  // Custom merge function
-  customMerge: (oldState, newState) => ({ ...oldState, ...newState })
+  // Enable debug logging (default: false)
+  debug?: boolean
 }
 ```
 
-### debug (optional)
+  </TabItem>
+</Tabs>
 
-Enable debug mode to log information about store creation and state updates.
+### Return Value
 
-```ts
-debug: true;
-```
+The `create` function returns a hook function with additional properties:
 
-## Example
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-import { create } from 'zustand-context';
+// The returned hook function
+function useStore<U>(selector?: (state: T) => U, options?: StoreOptions): U;
 
-interface TodoState {
-  todos: string[];
-  addTodo: (text: string) => void;
-  removeTodo: (index: number) => void;
-}
+// With attached Provider component and Zustand API
+useStore.Provider: React.FC<ProviderProps<T>>;
+useStore.getState: () => T;
+useStore.setState: (state: Partial<T> | ((state: T) => Partial<T>)) => void;
+useStore.subscribe: (listener: (state: T, prevState: T) => void) => () => void;
+```
 
-const useTodoStore = create<TodoState>(
-  (set) => ({
-    todos: [],
-    addTodo: (text) =>
-      set((state) => ({
-        todos: [...state.todos, text],
-      })),
-    removeTodo: (index) =>
-      set((state) => ({
-        todos: state.todos.filter((_, i) => i !== index),
-      })),
-  }),
-  {
-    name: 'TodoStore',
-    strict: true,
-    debug: true,
-    mergeOptions: {
-      shallow: false, // Use deep merge for initialState
-    },
-  },
-);
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
 
-function TodoList() {
-  const todos = useTodoStore((state) => state.todos);
-  const addTodo = useTodoStore((state) => state.addTodo);
+```jsx
+// The returned hook function
+function useStore(selector, options);
 
-  return (
-    <div>
-      <button onClick={() => addTodo('New todo')}>Add Todo</button>
-      <ul>
-        {todos.map((todo, index) => (
-          <li key={index}>{todo}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+// With attached Provider component and Zustand API
+useStore.Provider
+useStore.getState
+useStore.setState
+useStore.subscribe
+```
 
-function App() {
-  return (
-    <useTodoStore.Provider initialState={{ todos: ['Initial todo'] }}>
-      <TodoList />
-    </useTodoStore.Provider>
-  );
+  </TabItem>
+</Tabs>
+
+## Options Details
+
+### `name` (required)
+
+A unique string name for the store context. This is used for:
+
+- The React Context's display name (helpful for React DevTools)
+- Error messages and debugging
+- Ensuring uniqueness of your contexts
+
+```jsx
+{
+  name: 'Counter';
 }
 ```
 
-## create.optional
+### `defaultInstanceId` (optional)
 
-For backward compatibility with Zustand, there's a `create.optional` method that creates a non-strict store with default state:
+Sets a custom ID for the default instance of the store. If not provided, an internal Symbol is used.
 
-```tsx
-const useOptionalStore = create.optional(
-  (set) => ({
-    count: 0,
-    increment: () => set((state) => ({ count: state.count + 1 })),
-  }),
-  {
-    // Default state when no Provider is found
-    count: 0,
-    increment: () => console.warn('No Provider found'),
-  },
-);
+```jsx
+{
+  defaultInstanceId: 'main';
+}
 ```
 
-This is equivalent to:
+### `strict` (optional)
+
+Controls whether errors are thrown when:
+
+- A Provider is missing but the hook is used
+- A specific instance ID is requested but not found
+
+Default is `true` (errors are thrown).
+
+```jsx
+{
+  strict: false;
+} // No errors when Provider is missing
+```
+
+Setting `strict: false` enables "provider-optional" mode where components can use the store even without a Provider.
+
+### `onError` (optional)
+
+A custom error handler function for store errors:
+
+<Tabs groupId="language">
+  <TabItem value="ts" label="TypeScript" default>
 
 ```tsx
-const useOptionalStore = create(
-  (set) => ({
-    count: 0,
-    increment: () => set((state) => ({ count: state.count + 1 })),
-  }),
-  {
-    name: 'optional',
-    strict: false,
-    defaultState: {
-      count: 0,
-      increment: () => console.warn('No Provider found'),
-    },
-  },
-);
+{
+  onError: (error: Error) => {
+    console.warn('Store error:', error.message);
+    // Log to service, show fallback UI, etc.
+  };
+}
+```
+
+  </TabItem>
+  <TabItem value="js" label="JavaScript">
+
+```jsx
+{
+  onError: (error) => {
+    console.warn('Store error:', error.message);
+    // Log to service, show fallback UI, etc.
+  };
+}
+```
+
+  </TabItem>
+</Tabs>
+
+### `debug` (optional)
+
+Enables detailed console logging about store creation, instance access, and errors.
+
+```jsx
+{
+  debug: true;
+}
 ```
