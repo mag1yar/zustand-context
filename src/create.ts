@@ -1,51 +1,31 @@
 import { createContext, createElement, useContext, useRef } from 'react';
-import { createStore, type StoreApi, useStore } from 'zustand';
-import type { ContextStore, Create, ProviderProps } from './types';
-import { createLogPrefix, deepMerge, filterStateByLists, formatErrorMessage } from './utils';
-import { createStoreImpl } from './vanilla';
+import { createStore, useStore, type StateCreator, type StoreApi } from 'zustand';
+import type {
+  ContextOptions,
+  Create,
+  ProviderProps,
+  StoreContextType,
+  StoreOptions,
+} from './types';
+import { createLogPrefix, deepMerge, formatErrorMessage } from './utils';
 
-const DEFAULT_OPTIONS = {
-  strict: true,
-  debug: false,
-};
-
-/**
- * Creates a context-aware Zustand store with options
- */
-export const create: Create = (initializer, options) => {
-  // Merge with default options
-  const mergedOptions = {
-    ...DEFAULT_OPTIONS,
-    ...options,
-  };
-
+const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOptions) => {
   const {
     name,
+    debug = false,
     defaultInstanceId = Symbol('default'),
-    strict,
-    defaultState,
-    equalityFn,
     onError,
-    mergeOptions,
-    debug,
-  } = mergedOptions;
+    strict = true,
+  } = options;
 
-  // If not in strict mode and defaultState is defined, create a default store
-  const defaultStore = !strict && defaultState ? createStoreImpl(() => defaultState) : null;
+  const initialState = createStore(initializer).getState();
 
-  // Create a context to hold all store instances
-  const StoreContext = createContext<{
-    stores: Map<string | symbol, StoreApi<any>>;
-    defaultStore: StoreApi<any>;
-  } | null>(null);
+  const StoreContext = createContext<StoreContextType<T> | null>(null);
 
-  // Set display name for React DevTools
   StoreContext.displayName = `${name}StoreContext`;
 
-  // Create the log prefix for consistent logging
   const logPrefix = createLogPrefix(name, debug);
 
-  // Helper to handle errors
   const handleError = (error: Error) => {
     if (onError) {
       onError(error);
@@ -58,81 +38,15 @@ export const create: Create = (initializer, options) => {
     }
   };
 
-  // Merge strategy implementation
-  const mergeState = (oldState: any, newState: any): any => {
-    if (!newState || Object.keys(newState).length === 0) {
-      return oldState;
-    }
+  function useContextStore<U>(selector: (state: T) => U, options?: StoreOptions): U;
+  function useContextStore(): T;
+  function useContextStore<U>(selector?: (state: T) => U, options?: StoreOptions) {
+    const { from: instanceId } = options || {};
 
-    // Use custom merge if provided
-    if (mergeOptions?.customMerge) {
-      return mergeOptions.customMerge(oldState, newState);
-    }
-
-    // Filter by whitelist/blacklist
-    const filteredState = filterStateByLists(
-      newState,
-      mergeOptions?.whitelist,
-      mergeOptions?.blacklist,
-    );
-
-    // Shallow merge by default
-    if (mergeOptions?.shallow === false) {
-      // Deep merge
-      return deepMerge(oldState, filteredState);
-    }
-
-    // Shallow merge (default)
-    return { ...oldState, ...filteredState };
-  };
-
-  // Create the base hook function
-  function useContextStore<U>(selector: (state: any) => U, eq?: (a: U, b: U) => boolean): U;
-  function useContextStore(): any;
-  function useContextStore<U>(selector?: (state: any) => U, eq?: (a: U, b: U) => boolean) {
     const contextValue = useContext(StoreContext);
 
     if (!contextValue) {
-      if (defaultStore) {
-        if (debug) console.info(`${logPrefix}Using default store`);
-
-        return selector ? useStore(defaultStore, selector) : useStore(defaultStore);
-      }
-
-      const error = new Error(
-        formatErrorMessage(
-          'Provider not found. Make sure you have wrapped your components with the Provider.',
-          name,
-        ),
-      );
-
-      handleError(error);
-
-      // When not in strict mode and no defaultState, return empty object
-      // This should never execute in strict mode because handleError would throw
-      return {} as any;
-    }
-
-    // Use the default store from the closest provider
-    const store = contextValue.defaultStore;
-
-    // NOTE: В zustand v4+ useStore принимает только 2 аргумента
-    return selector ? useStore(store, selector) : useStore(store);
-  }
-
-  // Method to access a specific context instance
-  useContextStore.from = (instanceId?: string | symbol) => {
-    function useNamedContextStore<U>(selector: (state: any) => U, eq?: (a: U, b: U) => boolean): U;
-    function useNamedContextStore(): any;
-    function useNamedContextStore<U>(selector?: (state: any) => U, eq?: (a: U, b: U) => boolean) {
-      const contextValue = useContext(StoreContext);
-
-      if (!contextValue) {
-        if (defaultStore) {
-          if (debug) console.info(`${logPrefix}Using default store`);
-          return selector ? useStore(defaultStore, selector) : useStore(defaultStore);
-        }
-
+      if (strict) {
         const error = new Error(
           formatErrorMessage(
             'Provider not found. Make sure you have wrapped your components with the Provider.',
@@ -142,85 +56,81 @@ export const create: Create = (initializer, options) => {
 
         handleError(error);
 
-        // When not in strict mode and no defaultState, return empty object
-        return {} as any;
+        return {} as U;
+      } else {
+        if (debug) console.info(`${logPrefix}Provider not found, using default state`);
+        return selector ? selector(initialState) : initialState;
       }
-
-      // If no instanceId provided, use the default store
-      const targetInstanceId = instanceId ?? defaultInstanceId;
-      const store = instanceId
-        ? contextValue.stores.get(targetInstanceId) ?? contextValue.defaultStore
-        : contextValue.defaultStore;
-
-      if (instanceId && !contextValue.stores.has(targetInstanceId)) {
-        const warning = `Instance ${String(
-          targetInstanceId,
-        )} not found, using default instance instead`;
-        if (debug) console.warn(`${logPrefix}${warning}`);
-      }
-
-      return selector ? useStore(store, selector) : useStore(store);
     }
 
-    return useNamedContextStore;
-  };
+    if (instanceId) {
+      const requestedStore = contextValue.stores.get(instanceId);
 
-  // Create Provider component
-  const Provider = <P extends ProviderProps<any>>({
-    instanceId = defaultInstanceId,
-    initialState,
-    mergeStrategy,
-    children,
-  }: P) => {
-    const parentContext = useContext(StoreContext);
+      if (!requestedStore) {
+        if (strict) {
+          const error = new Error(
+            formatErrorMessage(
+              `Store with instanceId "${String(
+                instanceId,
+              )}" not found. Make sure you have provided the store in the Provider.`,
+              name,
+            ),
+          );
 
-    // Create a ref to hold our context value to avoid unnecessary re-renders
-    const contextRef = useRef<{
-      stores: Map<string | symbol, StoreApi<any>>;
-      defaultStore: StoreApi<any>;
-    } | null>(null);
+          handleError(error);
 
-    // Initialize the ref if it doesn't exist
-    if (!contextRef.current) {
-      const initialStores = new Map<string | symbol, StoreApi<any>>();
-
-      // Create a new store instance for this provider
-      const currentStore = createStore(initializer as any);
-
-      if (debug) console.info(`${logPrefix}Created new store instance for ${String(instanceId)}`);
-
-      // Apply initialState if provided
-      if (initialState) {
-        if (debug) console.info(`${logPrefix}Applying initialState to ${String(instanceId)}`);
-
-        if (mergeStrategy === 'replace') {
-          // Replace entire state
-          currentStore.setState(initialState as any, true);
-        } else if (mergeStrategy === 'deep') {
-          // Use deep merge - проверка типа initialState
-          const currentState = currentStore.getState();
-
-          const newState = deepMerge(currentState as Record<string, any>, initialState);
-          currentStore.setState(newState, true);
+          return {};
         } else {
-          // Use configured merge strategy (shallow by default)
-          const currentState = currentStore.getState();
-          const newState = mergeState(currentState, initialState);
-          currentStore.setState(newState, true);
+          console.warn(
+            `${logPrefix}Store with instanceId "${String(
+              instanceId,
+            )}" not found, using default state`,
+          );
+          return selector ? selector(initialState) : initialState;
         }
       }
 
-      // If we have a parent context, copy all its stores
+      return selector ? useStore(requestedStore, selector) : useStore(requestedStore);
+    }
+
+    return selector
+      ? useStore(contextValue.defaultStore, selector)
+      : useStore(contextValue.defaultStore);
+  }
+
+  const Provider = ({
+    instanceId = defaultInstanceId,
+    initialState,
+    children,
+  }: ProviderProps<T>) => {
+    const parentContext = useContext(StoreContext);
+
+    const contextRef = useRef<StoreContextType<T> | null>(null);
+
+    if (!contextRef.current) {
+      const initialStores = new Map<symbol | string, StoreApi<T>>();
+
+      const currentStore = createStore(initializer);
+
+      if (debug) console.info(`${logPrefix}Created new store instance for ${String(instanceId)}`);
+
+      if (initialState) {
+        if (debug) console.info(`${logPrefix}Applying initialState to ${String(instanceId)}`);
+
+        const currentState = currentStore.getState();
+
+        const newState = deepMerge<any>(currentState, initialState) as T;
+        currentStore.setState(newState, true);
+      }
+
       if (parentContext) {
         if (debug) console.info(`${logPrefix}Inheriting parent context stores`);
 
-        // Copy parent stores to maintain the hierarchy
         parentContext.stores.forEach((store, id) => {
           initialStores.set(id, store);
         });
       }
 
-      // Add or update this instance's store
       initialStores.set(instanceId, currentStore);
 
       contextRef.current = {
@@ -232,27 +142,15 @@ export const create: Create = (initializer, options) => {
     return createElement(StoreContext.Provider, { value: contextRef.current }, children);
   };
 
-  // Attach Provider to the hook
   useContextStore.Provider = Provider;
 
-  // Allow checking if provider exists
-  useContextStore.useProxySelector = (fallback: any) => {
-    try {
-      return useContextStore();
-    } catch (e) {
-      return fallback;
-    }
-  };
-
-  // Expose the raw context for advanced usage
-  useContextStore._context = StoreContext;
-
-  // Debugging utility
-  if (debug) {
-    useContextStore._debug = {
-      getOptions: () => mergedOptions,
-    };
-  }
-
-  return useContextStore as ContextStore<any>;
+  return useContextStore;
 };
+
+/**
+ * Creates a context-aware Zustand store with options
+ */
+export const create = (<T>(
+  initializer: StateCreator<T, [], []>,
+  options: ContextOptions,
+) => (initializer ? createImpl(initializer, options) : createImpl)) as Create;

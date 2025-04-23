@@ -20,20 +20,20 @@ A small, fast and scalable context-aware state management solution built on top 
 
 - 📦 Multiple instances of the same store
 - 🌲 Hierarchical state inheritance across components
-- 🎯 Named store references with `from()` method
+- 🎯 Named store references
 - 🔄 Same API as Zustand, just with context awareness
 
 ## Installation
 
 ```bash
 # Using npm
-npm install @mag1yar/zustand-context zustand
+npm install @mag1yar/zustand-context
 
 # Using yarn
-yarn add @mag1yar/zustand-context zustand
+yarn add @mag1yar/zustand-context
 
 # Using pnpm
-pnpm add @mag1yar/zustand-context zustand
+pnpm add @mag1yar/zustand-context
 ```
 
 ## Basic Usage
@@ -42,11 +42,11 @@ pnpm add @mag1yar/zustand-context zustand
 // 1. Create a store with context awareness
 import { create } from '@mag1yar/zustand-context';
 
-interface CounterState {
+type CounterState = {
   count: number;
   increment: () => void;
   reset: () => void;
-}
+};
 
 const useCounterStore = create<CounterState>(
   (set) => ({
@@ -125,13 +125,13 @@ function Counter({ label }) {
   );
 }
 
-// Access multiple counters using the from() method
+// Access multiple counters using the from option
 function MultiCounterInfo() {
   // Gets the current section's count
   const sectionCount = useCounterStore((state) => state.count);
 
   // Gets the app-level count from the parent
-  const appCount = useCounterStore.from('app')((state) => state.count);
+  const appCount = useCounterStore((state) => state.count, { from: 'app' });
 
   return (
     <div className="info">
@@ -148,19 +148,69 @@ function MultiCounterInfo() {
 | ------------------------- | ---------------------- | ------------------------ | ------------------------- |
 | Component-specific state  | ✅ Good                | ❌ Global only           | ✅ Best                   |
 | Avoiding re-renders       | ❌ Poor                | ✅ Good                  | ✅ Good                   |
-| Multiple instances        | ✅ Good                | ⚠️ Requires custom setup | ✅ Best     |
-| Access specific instances | ❌ No direct access    | ❌ Not applicable        | ✅ Simple with `from()`   |
+| Multiple instances        | ✅ Good                | ⚠️ Requires custom setup | ✅ Best                   |
+| Access specific instances | ❌ No direct access    | ❌ Not applicable        | ✅ Simple with options    |
 | State inheritance         | ⚠️ Manual prop passing | ❌ Not applicable        | ✅ Automatic hierarchical |
 | Middleware support        | ❌ None                | ✅ Excellent             | ✅ Compatible             |
 
-## Perfect for
+## API Reference
 
-- **UI component libraries**: Create stateful components with isolated state
-- **Multi-instance widgets**: Dashboards, forms, or any component that needs multiple instances
-- **Hierarchical applications**: Inherit and override state through component trees
-- **SSOT with locality**: Single source of truth within a component boundary
+### `create`
 
-## Full Documentation
+Creates a context-aware Zustand store.
 
-For complete API reference, advanced configuration, and more examples:  
+```tsx
+const useStore = create(
+  (set, get) => ({
+    // state and actions
+  }),
+  {
+    name: 'MyStore', // Required: unique name for the context
+    defaultInstanceId: 'main', // Optional: default instance ID
+    strict: true, // Optional: throws if Provider is missing (default: true)
+    debug: false, // Optional: enables debug logging (default: false)
+    onError: (error) => {}, // Optional: custom error handler
+  },
+);
+```
+
+### `useStore`
+
+The hook returned by `create` allows you to access the state from the nearest provider.
+
+```tsx
+// Get the full state
+const state = useStore();
+
+// Get a slice of state
+const count = useStore((state) => state.count);
+
+// Access a specific named instance
+const otherCount = useStore((state) => state.count, { from: 'InstanceName' });
+```
+
+### `Provider`
+
+Each store has a Provider component for creating instances.
+
+```tsx
+<useStore.Provider
+  instanceId="uniqueName" // Optional: identifier for this instance
+  initialState={
+    {
+      /* initial values */
+    }
+  } // Optional: override initial state
+>
+  {children}
+</useStore.Provider>
+```
+
+## Documentation
+
+For complete API reference, advanced configuration, middleware support, and more examples:
 [https://mag1yar.github.io/zustand-context/](https://mag1yar.github.io/zustand-context/)
+
+## License
+
+MIT

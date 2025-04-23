@@ -21,15 +21,6 @@ const sidebars: SidebarsConfig = {
     'introduction',
     'getting-started',
     'motivation',
-    {
-      type: 'category',
-      label: 'Core Concepts',
-      items: [
-        'core-concepts/store-with-context',
-        'core-concepts/provider-consumer-pattern',
-        'core-concepts/store-instances',
-      ],
-    },
     // {
     //   type: 'category',
     //   label: 'Guides',
@@ -41,11 +32,11 @@ const sidebars: SidebarsConfig = {
     //     'guides/error-handling',
     //   ],
     // },
-    // {
-    //   type: 'category',
-    //   label: 'API Reference',
-    //   items: ['api/create', 'api/provider', 'api/from', 'api/types'],
-    // },
+    {
+      type: 'category',
+      label: 'API Reference',
+      items: ['api/create', 'api/store-hook', 'api/provider'],
+    },
   ],
 };
 

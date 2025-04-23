@@ -2,8 +2,6 @@ import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
 const organizationName = 'mag1yar';
 const projectName = 'zustand-context';
 
@@ -11,18 +9,13 @@ const config: Config = {
   title: 'Zustand Context',
   tagline:
     'Zustand Context is a small and simple library that provides a way to use Zustand with React Context.',
-  favicon: 'img/favicon.ico',
+  // favicon: 'img/favicon.ico',
 
-  // Set the production url of your site here
   url: `https://${organizationName}.github.io`,
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: `/${projectName}/`,
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName, // Usually your GitHub org/user name.
-  projectName, // Usually your repo name.
+  organizationName,
+  projectName,
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -40,11 +33,12 @@ const config: Config = {
       'classic',
       {
         docs: {
+          routeBasePath: '/',
+
           sidebarPath: './sidebars.ts',
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl: `https://github.com/${organizationName}/${projectName}/tree/main/docs/docs/`,
+          editUrl: `https://github.com/${organizationName}/${projectName}/tree/main/docs/`,
         },
+        blog: false,
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -53,7 +47,7 @@ const config: Config = {
   ],
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    // image: 'img/docusaurus-social-card.jpg',
     navbar: {
       title: 'Zustand Context',
       // logo: {
@@ -62,42 +56,16 @@ const config: Config = {
       // },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'docsSidebar',
-          position: 'left',
-          label: 'Docs',
-        },
-        {
           href: `https://github.com/${organizationName}/${projectName}`,
           label: 'GitHub',
           position: 'right',
         },
       ],
     },
-    footer: {
-      style: 'dark',
-      links: [
-        {
-          title: 'Docs',
-          items: [
-            {
-              label: 'Getting Started',
-              to: '/docs/getting-started',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: `https://github.com/${organizationName}/${projectName}`,
-            },
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Zustand Context, Inc. Built with Docusaurus.`,
-    },
+    // footer: {
+    //   style: 'dark',
+    //   copyright: `Copyright © ${new Date().getFullYear()} Zustand Context, Inc. Built with Docusaurus.`,
+    // },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
