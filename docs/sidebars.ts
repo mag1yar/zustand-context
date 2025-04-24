@@ -34,8 +34,13 @@ const sidebars: SidebarsConfig = {
     // },
     {
       type: 'category',
+      label: 'Middlewares',
+      items: ['middlewares/persist'],
+    },
+    {
+      type: 'category',
       label: 'API Reference',
-      items: ['api/create', 'api/store-hook', 'api/provider'],
+      items: ['api/create', 'api/store-hook', 'api/provider', 'api/adapt-middleware'],
     },
   ],
 };

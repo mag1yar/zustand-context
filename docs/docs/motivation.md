@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # Why zustand-context?
 
 ## The Problem: Global vs. Local State

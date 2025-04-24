@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # create
 
 The `create` function is the entry point for creating context-aware stores. It builds on Zustand's `create` function while adding context capabilities.
@@ -100,9 +96,6 @@ interface ContextOptions {
   /** Required unique name for the store context */
   name: string;
 
-  /** Optional ID for the default instance (default: internal Symbol) */
-  defaultInstanceId?: string | symbol;
-
   /** Whether to throw errors when Provider is missing (default: true) */
   strict?: boolean;
 
@@ -121,9 +114,6 @@ interface ContextOptions {
 {
   // Required unique name for the store context
   name: string,
-
-  // Optional ID for the default instance (default: internal Symbol)
-  defaultInstanceId?: string | Symbol,
 
   // Whether to throw errors when Provider is missing (default: true)
   strict?: boolean,
@@ -187,16 +177,6 @@ A unique string name for the store context. This is used for:
 ```jsx
 {
   name: 'Counter';
-}
-```
-
-### `defaultInstanceId` (optional)
-
-Sets a custom ID for the default instance of the store. If not provided, an internal Symbol is used.
-
-```jsx
-{
-  defaultInstanceId: 'main';
 }
 ```
 

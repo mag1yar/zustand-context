@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 # Getting Started
 
 Let's get you up and running with `zustand-context` in just a few steps.

@@ -368,22 +368,6 @@ function SafeComponent({ instanceId }) {
 }
 ```
 
-## Default Instance ID
-
-When creating a store, you can specify a default instance ID:
-
-```tsx
-const useStore = create<State>(
-  (set) => ({
-    // State and actions
-  }),
-  {
-    name: 'Store',
-    defaultInstanceId: 'main', // Default instance ID
-  },
-);
-```
-
 If you don't provide an `instanceId` to the Provider, it will use this default ID:
 
 ```tsx

@@ -1,7 +1,3 @@
----
-sidebar_position: 3
----
-
 # Store Hook
 
 The store hook is what's returned from the `create` function. It's the primary way to access and use your store's state.
@@ -131,7 +127,7 @@ An options object for configuring hook behavior.
 ```tsx
 interface StoreOptions {
   /** Access a specific store instance by ID */
-  from?: string | symbol;
+  from?: string;
 }
 ```
 
@@ -141,7 +137,7 @@ interface StoreOptions {
 ```jsx
 {
   // Access a specific store instance by ID
-  from: string | Symbol;
+  from: string;
 }
 ```
 

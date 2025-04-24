@@ -1,7 +1,3 @@
----
-sidebar_position: 4
----
-
 # Provider Component
 
 The `.Provider` component is attached to every store created with `zustand-context`. It creates a boundary for your store instance and makes it available to all child components.
@@ -42,7 +38,7 @@ import TabItem from '@theme/TabItem';
 ```tsx
 interface ProviderProps<T> {
   /** Optional ID for this instance */
-  instanceId?: string | symbol;
+  instanceId?: string;
 
   /** Optional initial state (partial) */
   initialState?: DeepPartial<T>;
@@ -58,7 +54,7 @@ interface ProviderProps<T> {
 ```jsx
 {
   // Optional ID for this instance
-  instanceId?: string | Symbol,
+  instanceId?: string,
 
   // Optional initial state (partial)
   initialState?: object,
@@ -79,7 +75,7 @@ A unique identifier for this instance of the store. Used to:
 - Distinguish between multiple instances of the same store
 - Provide meaningful names in debugging and error messages
 
-If not provided, a default internal Symbol will be used.
+If not provided or set to an empty string, a default internal identifier will be used.
 
 <Tabs groupId="language">
   <TabItem value="ts" label="TypeScript" default>
@@ -105,33 +101,6 @@ If not provided, a default internal Symbol will be used.
 <useCounterStore.Provider instanceId="sidebar">
   <SidebarCounter />
 </useCounterStore.Provider>
-```
-
-  </TabItem>
-</Tabs>
-
-You can also use a Symbol for guaranteed uniqueness:
-
-<Tabs groupId="language">
-  <TabItem value="ts" label="TypeScript" default>
-
-```tsx
-const HEADER_ID = Symbol('header');
-
-<useCounterStore.Provider instanceId={HEADER_ID}>
-  <HeaderCounter />
-</useCounterStore.Provider>;
-```
-
-  </TabItem>
-  <TabItem value="js" label="JavaScript">
-
-```jsx
-const HEADER_ID = Symbol('header');
-
-<useCounterStore.Provider instanceId={HEADER_ID}>
-  <HeaderCounter />
-</useCounterStore.Provider>;
 ```
 
   </TabItem>

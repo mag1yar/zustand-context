@@ -1,6 +1,5 @@
 ---
 slug: /
-sidebar_position: 1
 ---
 
 # Introduction to zustand-context

@@ -285,7 +285,7 @@ Create a higher-order component to ensure a specific instance exists:
 function withStoreInstance<P extends object>(
   Component: React.ComponentType<P>,
   storeHook: any,
-  instanceId: string | symbol,
+  instanceId: string,
   fallback: React.ReactNode,
 ): React.FC<P> {
   return (props) => {
@@ -324,7 +324,7 @@ function StoreInstanceGuard({
   fallback,
 }: {
   storeHook: any;
-  instanceId: string | symbol;
+  instanceId: string;
   children: React.ReactNode;
   fallback: React.ReactNode;
 }) {
