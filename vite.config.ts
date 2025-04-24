@@ -16,14 +16,18 @@ export default defineConfig({
   build: {
     copyPublicDir: false,
     lib: {
-      entry: resolve(__dirname, 'src/main.ts'),
+      entry: {
+        index: resolve(__dirname, 'src/index.ts'),
+        middleware: resolve(__dirname, 'src/middleware/index.ts'),
+      },
       formats: ['es'],
+      fileName: (format, entryName) =>
+        entryName === 'middleware' ? 'middleware/index.js' : '[name].js',
     },
     rollupOptions: {
       external: ['react', 'zustand', /^zustand\/.*/, /^react\/.*/],
       output: {
         assetFileNames: 'assets/[name][extname]',
-        entryFileNames: '[name].js',
         globals: {
           react: 'React',
           zustand: 'zustand',
@@ -32,7 +36,7 @@ export default defineConfig({
       },
     },
     target: 'es2020',
-    sourcemap: true,
+    sourcemap: false,
     emptyOutDir: true,
   },
 });

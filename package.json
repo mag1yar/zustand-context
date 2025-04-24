@@ -1,20 +1,34 @@
 {
   "name": "@mag1yar/zustand-context",
   "description": "Context-aware state management built on top of Zustand",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "main": "dist/main.js",
-  "module": "dist/main.js",
-  "types": "dist/main.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/main.js",
-      "types": "./dist/main.d.ts"
-    }
-  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./middleware": {
+      "import": "./dist/middleware/index.js",
+      "types": "./dist/middleware.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/index.d.ts"
+      ],
+      "middleware": [
+        "dist/middleware.d.ts"
+      ]
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "dev": "vite build --watch",

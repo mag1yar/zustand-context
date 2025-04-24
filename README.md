@@ -22,6 +22,7 @@ A small, fast and scalable context-aware state management solution built on top 
 - 🌲 Hierarchical state inheritance across components
 - 🎯 Named store references
 - 🔄 Same API as Zustand, just with context awareness
+- 🔌 Full compatibility with Zustand middleware
 
 ## Installation
 
@@ -166,7 +167,6 @@ const useStore = create(
   }),
   {
     name: 'MyStore', // Required: unique name for the context
-    defaultInstanceId: 'main', // Optional: default instance ID
     strict: true, // Optional: throws if Provider is missing (default: true)
     debug: false, // Optional: enables debug logging (default: false)
     onError: (error) => {}, // Optional: custom error handler
@@ -205,6 +205,43 @@ Each store has a Provider component for creating instances.
   {children}
 </useStore.Provider>
 ```
+
+## Middleware Support
+
+zustand-context supports all Zustand middleware through the `adaptMiddleware` utility.
+
+### Persist Middleware
+
+The library includes an adapted version of the persist middleware that works with multiple store instances:
+
+```tsx
+import { create } from '@mag1yar/zustand-context';
+import { persist } from '@mag1yar/zustand-context/middleware';
+
+const useProfileStore = create(
+  persist(
+    (set) => ({
+      username: 'Guest',
+      theme: 'light',
+      setUsername: (name) => set({ username: name }),
+    }),
+    { name: 'user-profile' }
+  ),
+  { name: 'Profile' }
+);
+
+// Default instance won't persist
+<useProfileStore.Provider>
+  <Profile />
+</useProfileStore.Provider>
+
+// Named instances will persist state
+<useProfileStore.Provider instanceId="user1">
+  <Profile />
+</useProfileStore.Provider>
+```
+
+See the [persist middleware documentation](https://mag1yar.github.io/zustand-context/middlewares/persist) for details on advanced features and configuration options.
 
 ## Documentation
 

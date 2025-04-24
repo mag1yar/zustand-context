@@ -10,13 +10,7 @@ import type {
 import { createLogPrefix, deepMerge, formatErrorMessage } from './utils';
 
 const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOptions) => {
-  const {
-    name,
-    debug = false,
-    defaultInstanceId = Symbol('default'),
-    onError,
-    strict = true,
-  } = options;
+  const { name, debug = false, onError, strict = true } = options;
 
   const initialState = createStore(initializer).getState();
 
@@ -98,19 +92,22 @@ const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOpt
       : useStore(contextValue.defaultStore);
   }
 
-  const Provider = ({
-    instanceId = defaultInstanceId,
-    initialState,
-    children,
-  }: ProviderProps<T>) => {
+  const Provider = ({ instanceId = 'default', initialState, children }: ProviderProps<T>) => {
     const parentContext = useContext(StoreContext);
 
     const contextRef = useRef<StoreContextType<T> | null>(null);
 
     if (!contextRef.current) {
-      const initialStores = new Map<symbol | string, StoreApi<T>>();
+      const enhancedInitializer = (set: any, get: any, api: any) => {
+        return initializer(set, get, {
+          ...api,
+          _contextInstanceId: instanceId,
+        });
+      };
 
-      const currentStore = createStore(initializer);
+      const initialStores = new Map<string, StoreApi<T>>();
+
+      const currentStore = createStore(enhancedInitializer);
 
       if (debug) console.info(`${logPrefix}Created new store instance for ${String(instanceId)}`);
 
@@ -150,7 +147,5 @@ const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOpt
 /**
  * Creates a context-aware Zustand store with options
  */
-export const create = (<T>(
-  initializer: StateCreator<T, [], []>,
-  options: ContextOptions,
-) => (initializer ? createImpl(initializer, options) : createImpl)) as Create;
+export const create = (<T>(initializer: StateCreator<T, [], []>, options: ContextOptions) =>
+  initializer ? createImpl(initializer, options) : createImpl) as Create;

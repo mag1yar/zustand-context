@@ -20,7 +20,8 @@
     "typeRoots": ["./node_modules/@types", "./types"],
     "baseUrl": ".",
     "paths": {
-      "zustand-context": ["./src"]
+      "@mag1yar/zustand-context": ["./src/index.ts"],
+      "@mag1yar/zustand-context/middleware": ["./src/middleware/index.ts"]
     }
   },
   "include": ["src", "tests"],

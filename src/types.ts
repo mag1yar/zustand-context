@@ -10,24 +10,23 @@ export type DeepPartial<T> = T extends object
 
 export type ContextOptions = {
   name: string;
-  defaultInstanceId?: string | symbol;
   strict?: boolean;
   onError?: (error: Error) => void;
   debug?: boolean;
 };
 
 export type ProviderProps<T> = {
-  instanceId?: string | symbol;
+  instanceId?: string;
   initialState?: DeepPartial<T>;
   children: ReactNode;
 };
 
 export type StoreOptions = {
-  from?: string | symbol;
+  from?: string;
 };
 
 export type StoreContextType<T> = {
-  stores: Map<string | symbol, StoreApi<T>>;
+  stores: Map<string, StoreApi<T>>;
   defaultStore: StoreApi<T>;
 };
 
