@@ -35,7 +35,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Middlewares',
-      items: ['middlewares/persist'],
+      items: ['middlewares/devtools', 'middlewares/immer', 'middlewares/persist'],
     },
     {
       type: 'category',
