@@ -102,6 +102,7 @@ const createImpl = <T>(initializer: StateCreator<T, [], []>, options: ContextOpt
         return initializer(set, get, {
           ...api,
           _contextInstanceId: instanceId,
+          _contextName: name,
         });
       };
 
